@@ -1,0 +1,257 @@
+#include <SDL.h>
+#include <stdio.h>
+#include <SDL_ttf.h>
+
+
+
+int main(int argc, char* argv[]) {
+    int arr[] = {4,3,2,5,1};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    int correctIndex = -1;
+
+    // Initialize SDL
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        return 1;
+    }
+    if (TTF_Init() == -1) {
+        printf("SDL_ttf could not initialize! TTF_Error: %s\n", TTF_GetError());
+        return 1;
+    }
+
+    // Create a window
+    SDL_Window* window = SDL_CreateWindow(
+        "Array Display",
+        SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED,
+        1000,
+        800,
+        SDL_WINDOW_SHOWN
+    );
+    if (window == NULL) {
+        printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    // Create a renderer
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == NULL) {
+        printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    // Set the render color to white
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+
+    // Clear the screen
+    SDL_RenderClear(renderer);
+    TTF_Font* font = TTF_OpenFont("C:/Windows/Fonts/arial.ttf", 25);
+    if (font == NULL) {
+        printf("Font could not be loaded! TTF_Error: %s\n", TTF_GetError());
+        return 1;
+    }
+
+    SDL_Delay(5000);
+    SDL_Color textColor = { 0, 0, 0, 255 }; // Black color
+    int xOffset = 350; // Horizontal offset for each element
+    int textHeight = 50; // To store the maximum height of rendered text
+    int yOffset = 400;
+
+    for (int i = 0; i < n - 1; i++) {
+        int minIndex = i;
+        SDL_RenderClear(renderer);
+        for (int k = 0; k < n; ++k) {
+            char numberStr[10]; // String to hold the number
+
+            snprintf(numberStr, sizeof(numberStr), "%d", arr[k]); // Convert int to string
+            if (k == minIndex)
+            {
+                textColor.r = 255; textColor.g = 0; textColor.b = 0;
+            }
+            else if (k <= correctIndex) 
+            {
+                textColor.r = 0; textColor.g = 255; textColor.b = 0;
+            }
+            else
+            {
+                textColor.r = 255; textColor.g = 255; textColor.b = 255;
+            }
+            SDL_Surface* textSurface = TTF_RenderText_Solid(font, numberStr, textColor);
+            SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+            int textWidth = textSurface->w;
+            textHeight = textSurface->h;
+            SDL_Rect textRect = { xOffset + k * 50, yOffset, textSurface->w, textSurface->h };
+            SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+
+            SDL_FreeSurface(textSurface);
+            SDL_DestroyTexture(textTexture);
+
+        }
+
+        SDL_RenderPresent(renderer);
+        SDL_Delay(1000);
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+            SDL_RenderClear(renderer);
+            for (int k = 0; k < n; ++k) {
+                char numberStr[10]; // String to hold the number
+
+                snprintf(numberStr, sizeof(numberStr), "%d", arr[k]); // Convert int to string
+                if (k == minIndex)
+                {
+                    textColor.r = 255; textColor.g = 0; textColor.b = 0;
+                }
+                else if (k <= correctIndex) {
+                    textColor.r = 0; textColor.g = 255; textColor.b = 0;
+                }
+                else if (k == i) {
+                    textColor.r = 0; textColor.g = 0; textColor.b = 255;
+                }
+                else
+                {
+                    textColor.r = 255; textColor.g = 255; textColor.b = 255;
+                }
+
+                if (k == j) {
+                    SDL_Surface* textSurface2 = TTF_RenderText_Solid(font, "^", textColor);
+                    SDL_Texture* textTexture2 = SDL_CreateTextureFromSurface(renderer, textSurface2);
+                    SDL_Rect textRect2 = { xOffset + k * 50, yOffset + 50, textSurface2->w, textSurface2->h };
+                    SDL_RenderCopy(renderer, textTexture2, NULL, &textRect2);
+                    SDL_FreeSurface(textSurface2);
+                    SDL_DestroyTexture(textTexture2);
+                }
+
+                SDL_Surface* textSurface1 = TTF_RenderText_Solid(font, numberStr, textColor);
+                SDL_Texture* textTexture1 = SDL_CreateTextureFromSurface(renderer, textSurface1);
+
+                
+              
+                SDL_Rect textRect1 = { xOffset + k * 50, yOffset, textSurface1->w, textSurface1->h };
+                
+                SDL_RenderCopy(renderer, textTexture1, NULL, &textRect1);
+                
+
+                SDL_FreeSurface(textSurface1);
+                SDL_DestroyTexture(textTexture1);
+        
+            }
+            SDL_RenderPresent(renderer);
+            SDL_Delay(1000);
+        }
+
+        if (i < minIndex) {
+            int l = 300, r = 400;
+            for (int x = 0; x <= minIndex - i; x++) {
+                printf("%d ", x);
+                l += 50;
+                r -= 50;
+                SDL_RenderClear(renderer);
+                for (int k = 0; k < n; ++k) {
+                    yOffset = 400;
+                    xOffset = 350;
+                    char numberStr[10]; // String to hold the number
+
+                    snprintf(numberStr, sizeof(numberStr), "%d", arr[k]); // Convert int to string
+                    if (k == minIndex)
+                    {
+                        textColor.r = 255; textColor.g = 0; textColor.b = 0;
+                        yOffset = 350;
+                        xOffset = r;
+                    }
+                    else if (k <= correctIndex) {
+                        textColor.r = 0; textColor.g = 255; textColor.b = 0;
+                    }
+                    else
+                    {
+                        textColor.r = 255; textColor.g = 255; textColor.b = 255;
+                    }
+                    if (k == i) {
+                        yOffset = 450;
+                        xOffset = l;
+                    }
+                    SDL_Surface* textSurface = TTF_RenderText_Solid(font, numberStr, textColor);
+                    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                    SDL_Rect textRect = { xOffset + k * 50, yOffset, textSurface->w, textSurface->h };
+                    SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+
+                    SDL_FreeSurface(textSurface);
+                    SDL_DestroyTexture(textTexture);
+
+                }
+                SDL_RenderPresent(renderer);
+                SDL_Delay(1000);
+            }
+        }
+
+        int temp = arr[i];
+        arr[i] = arr[minIndex];
+        arr[minIndex] = temp;
+
+        yOffset = 400;
+        xOffset = 350;
+        SDL_RenderClear(renderer);
+
+        for (int k = 0; k < n; ++k) {
+            char numberStr[10]; // String to hold the number
+
+            snprintf(numberStr, sizeof(numberStr), "%d", arr[k]); // Convert int to string
+            if (k == minIndex)
+            {
+                textColor.r = 255; textColor.g = 0; textColor.b = 0;
+            }
+            else if (k <= correctIndex) {
+                textColor.r = 0; textColor.g = 255; textColor.b = 0;
+            }
+            else
+            {
+                textColor.r = 255; textColor.g = 255; textColor.b = 255;
+            }
+
+            SDL_Surface* textSurface = TTF_RenderText_Solid(font, numberStr, textColor);
+            SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+            SDL_Rect textRect = { xOffset + k * 50, yOffset, textSurface->w, textSurface->h };
+            SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+
+            SDL_FreeSurface(textSurface);
+            SDL_DestroyTexture(textTexture);
+
+        }
+
+        SDL_RenderPresent(renderer);
+        SDL_Delay(1000);
+        correctIndex++;
+    }
+    // Clean up
+    yOffset = 400;
+    xOffset = 350;
+    SDL_RenderClear(renderer);
+
+    for (int k = 0; k < n; ++k) {
+        char numberStr[10]; // String to hold the number
+
+        snprintf(numberStr, sizeof(numberStr), "%d", arr[k]); // Convert int to string
+        textColor.g = 255;
+        textColor.r = 0;
+        textColor.b = 0;
+
+        SDL_Surface* textSurface = TTF_RenderText_Solid(font, numberStr, textColor);
+        SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+        SDL_Rect textRect = { xOffset + k * 50, yOffset, textSurface->w, textSurface->h };
+        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+
+        SDL_FreeSurface(textSurface);
+        SDL_DestroyTexture(textTexture);
+
+    }
+
+    SDL_RenderPresent(renderer);
+    SDL_Delay(1000);
+    
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+
+    return 0;
+}
