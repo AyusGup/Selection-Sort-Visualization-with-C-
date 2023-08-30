@@ -1,3 +1,6 @@
+// In this video we are going to make selection sort animation using C/C++
+// For this we are going to use Visual Studio with desktop development with C++
+// Also pre-requisites is to install and connect SDL and SDL_ttf in Visual Studio
 #include <SDL.h>
 #include <stdio.h>
 #include <SDL_ttf.h>
@@ -5,10 +8,20 @@
 
 
 int main(int argc, char* argv[]) {
-    int arr[] = {4,3,2,5,1};
+    int arr[] = {4,3,2,5,1};   // this is an example array that can be any random array
     int n = sizeof(arr) / sizeof(arr[0]);
-    int correctIndex = -1;
+    int correctIndex = -1;   // represents the index upto which the array is sorted that will be coloured green
+    int delay = 1000;   
+    int choice;
+    printf("%s","0 for slow\n1 for fast\n");
+    scanf_s("%d", &choice);
 
+    if (choice == 0) {
+        delay = 2000;
+    }
+    else {
+        delay = 1000;
+    }
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
@@ -40,8 +53,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Set the render color to white
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    // Set the render color to black
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0); // setting background color as black can be any color u want
 
     // Clear the screen
     SDL_RenderClear(renderer);
@@ -51,7 +64,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    SDL_Delay(5000);
+    SDL_Delay(1000);
     SDL_Color textColor = { 0, 0, 0, 255 }; // Black color
     int xOffset = 350; // Horizontal offset for each element
     int textHeight = 50; // To store the maximum height of rendered text
@@ -66,15 +79,15 @@ int main(int argc, char* argv[]) {
             snprintf(numberStr, sizeof(numberStr), "%d", arr[k]); // Convert int to string
             if (k == minIndex)
             {
-                textColor.r = 255; textColor.g = 0; textColor.b = 0;
+                textColor.r = 255; textColor.g = 0; textColor.b = 0;   //the min value index that is colored with red
             }
             else if (k <= correctIndex) 
             {
-                textColor.r = 0; textColor.g = 255; textColor.b = 0;
+                textColor.r = 0; textColor.g = 255; textColor.b = 0;  //sorted array
             }
             else
             {
-                textColor.r = 255; textColor.g = 255; textColor.b = 255;
+                textColor.r = 255; textColor.g = 255; textColor.b = 255;  //remaining array 
             }
             SDL_Surface* textSurface = TTF_RenderText_Solid(font, numberStr, textColor);
             SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
@@ -89,7 +102,7 @@ int main(int argc, char* argv[]) {
         }
 
         SDL_RenderPresent(renderer);
-        SDL_Delay(1000);
+        SDL_Delay(delay);
         for (int j = i + 1; j < n; j++) {
             if (arr[j] < arr[minIndex]) {
                 minIndex = j;
@@ -101,21 +114,21 @@ int main(int argc, char* argv[]) {
                 snprintf(numberStr, sizeof(numberStr), "%d", arr[k]); // Convert int to string
                 if (k == minIndex)
                 {
-                    textColor.r = 255; textColor.g = 0; textColor.b = 0;
+                    textColor.r = 255; textColor.g = 0; textColor.b = 0; //the min value index that is colored with red
                 }
                 else if (k <= correctIndex) {
-                    textColor.r = 0; textColor.g = 255; textColor.b = 0;
+                    textColor.r = 0; textColor.g = 255; textColor.b = 0;  //sorted array
                 }
                 else if (k == i) {
-                    textColor.r = 0; textColor.g = 0; textColor.b = 255;
+                    textColor.r = 0; textColor.g = 0; textColor.b = 255;   //index to be swapped colored with blue
                 }
                 else
                 {
-                    textColor.r = 255; textColor.g = 255; textColor.b = 255;
+                    textColor.r = 255; textColor.g = 255; textColor.b = 255;  //remaining array
                 }
 
                 if (k == j) {
-                    SDL_Surface* textSurface2 = TTF_RenderText_Solid(font, "^", textColor);
+                    SDL_Surface* textSurface2 = TTF_RenderText_Solid(font, "^", textColor);  //pointer pointing element
                     SDL_Texture* textTexture2 = SDL_CreateTextureFromSurface(renderer, textSurface2);
                     SDL_Rect textRect2 = { xOffset + k * 50, yOffset + 50, textSurface2->w, textSurface2->h };
                     SDL_RenderCopy(renderer, textTexture2, NULL, &textRect2);
@@ -138,13 +151,12 @@ int main(int argc, char* argv[]) {
         
             }
             SDL_RenderPresent(renderer);
-            SDL_Delay(1000);
+            SDL_Delay(delay);
         }
 
         if (i < minIndex) {
-            int l = 300, r = 400;
+            int l = 300, r = 400;       //this section is for swapping visualization of the values
             for (int x = 0; x <= minIndex - i; x++) {
-                printf("%d ", x);
                 l += 50;
                 r -= 50;
                 SDL_RenderClear(renderer);
@@ -181,7 +193,7 @@ int main(int argc, char* argv[]) {
 
                 }
                 SDL_RenderPresent(renderer);
-                SDL_Delay(1000);
+                SDL_Delay(delay);
             }
         }
 
@@ -220,10 +232,10 @@ int main(int argc, char* argv[]) {
         }
 
         SDL_RenderPresent(renderer);
-        SDL_Delay(1000);
+        SDL_Delay(delay);
         correctIndex++;
     }
-    // Clean up
+
     yOffset = 400;
     xOffset = 350;
     SDL_RenderClear(renderer);
@@ -247,11 +259,13 @@ int main(int argc, char* argv[]) {
     }
 
     SDL_RenderPresent(renderer);
-    SDL_Delay(1000);
+    SDL_Delay(delay);
     
     SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+    SDL_DestroyWindow(window);           //to terminate screen and window after completion
     SDL_Quit();
 
     return 0;
 }
+
+                 // task done successfully
